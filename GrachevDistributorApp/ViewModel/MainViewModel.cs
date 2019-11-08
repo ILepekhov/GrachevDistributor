@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace GrachevDistributorApp.ViewModel
@@ -16,7 +17,7 @@ namespace GrachevDistributorApp.ViewModel
         private readonly Renamer _renamer;
 
         private int _initialNameIndex;
-        private bool _inProgress;
+        private bool _notInProgress;
 
         #endregion
 
@@ -30,10 +31,10 @@ namespace GrachevDistributorApp.ViewModel
             set => SetValue(() => _initialNameIndex = value);
         }
 
-        public bool InProgress
+        public bool NotInProgress
         {
-            get => _inProgress;
-            set => SetValue(() => _inProgress = value);
+            get => _notInProgress;
+            set => SetValue(() => _notInProgress = value);
         }
 
         #endregion
@@ -42,7 +43,7 @@ namespace GrachevDistributorApp.ViewModel
 
         public ICommand SelectDirectoryCommand { get; }
 
-        public ICommand RemaneCommand { get; }
+        public ICommand RenameCommand { get; }
 
         #endregion
 
@@ -54,13 +55,43 @@ namespace GrachevDistributorApp.ViewModel
 
             FilePairs = new ObservableCollection<FilePair>();
             InitialNameIndex = 1;
+
+            SelectDirectoryCommand = CreateCommand(ExecuteSelectDirectoryCommand);
+            RenameCommand = CreateCommand(ExecuteRenameCommand, CanExecuteRenameCommand);
+
+            NotInProgress = true;
         }
 
         #endregion
 
         #region Command handlers
 
+        private async void ExecuteSelectDirectoryCommand(object _)
+        {
+            var dialog = new FolderBrowserDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                FilePairs.Clear();
 
+                await Task.Run(() => _renamer.LoadFiles(dialog.SelectedPath));
+
+                foreach (var pair in _renamer.GetFilePairs())
+                    FilePairs.Add(pair);
+            }
+        }
+
+        private bool CanExecuteRenameCommand(object _) => FilePairs.Any();
+
+        private async void ExecuteRenameCommand(object _)
+        {
+            NotInProgress = false;
+
+            InitialNameIndex = await Task.Run(() => _renamer.RenameFiles(InitialNameIndex));
+
+            NotInProgress = true;
+
+            MessageBox.Show("Переименование завершено", "Финиш", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         #endregion
     }

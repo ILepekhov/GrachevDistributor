@@ -19,8 +19,6 @@ namespace GrachevDistributorApp.Model
 
         public IEnumerable<FilePair> Pairs => _pairs;
 
-        public int InitialNameIndex { get; set; }
-
         #endregion
 
         #region .ctor
@@ -48,9 +46,11 @@ namespace GrachevDistributorApp.Model
             }
         }
 
-        public void RenameFiles()
+        public IEnumerable<FilePair> GetFilePairs() => _pairs;
+
+        public int RenameFiles(int initialNameIndex)
         {
-            if (!_pairs.Any()) return;
+            if (!_pairs.Any()) return initialNameIndex;
 
             foreach (var pair in _pairs)
             {
@@ -58,7 +58,7 @@ namespace GrachevDistributorApp.Model
 
                 try
                 {
-                    File.Move(pair.ArchiveFilePath, pair.ArchiveFilePath.Replace(pair.PairName, InitialNameIndex.ToString()));
+                    File.Move(pair.ArchiveFilePath, pair.ArchiveFilePath.Replace(pair.PairName, initialNameIndex.ToString()));
                 }
                 catch
                 {
@@ -67,16 +67,18 @@ namespace GrachevDistributorApp.Model
 
                 try
                 {
-                    File.Move(pair.PictureFilePath, pair.PictureFilePath.Replace(pair.PairName, InitialNameIndex.ToString()));
+                    File.Move(pair.PictureFilePath, pair.PictureFilePath.Replace(pair.PairName, initialNameIndex.ToString()));
                 }
                 catch
                 {
-                    File.Move(pair.ArchiveFilePath.Replace(pair.PairName, InitialNameIndex.ToString()), pair.ArchiveFilePath);
+                    File.Move(pair.ArchiveFilePath.Replace(pair.PairName, initialNameIndex.ToString()), pair.ArchiveFilePath);
                     continue;
                 }
 
-                InitialNameIndex++;
+                initialNameIndex++;
             }
+
+            return initialNameIndex;
         }
 
         #endregion

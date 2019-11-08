@@ -1,12 +1,29 @@
-﻿<Window x:Class="GrachevDistributorApp.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GrachevDistributorApp"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+﻿<Controls:MetroWindow x:Class="GrachevDistributorApp.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:local="clr-namespace:GrachevDistributorApp"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      mc:Ignorable="d"
+                      Title="Renamer by ILepekhov"
+                      WindowStartupLocation="CenterScreen"
+                      Height="450" 
+                      Width="800">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Header="Управление" VerticalAlignment="Top">
+            <UniformGrid Columns="2" IsEnabled="{Binding NotInProgress}">
+                <TextBlock Text="Начальный индекс" VerticalAlignment="Center" />
+                <Controls:NumericUpDown Value="{Binding InitialNameIndex}" Minimum="1" HasDecimals="False" />
+
+                <Button Content="Выбрать каталог" Command="{Binding SelectDirectoryCommand}"/>
+                <Button Content="Переименовать" Command="{Binding RenameCommand}"/>
+            </UniformGrid>
+        </GroupBox>
     </Grid>
-</Window>
+</Controls:MetroWindow>
