@@ -73,7 +73,14 @@ namespace GrachevDistributorApp.ViewModel
             {
                 FilePairs.Clear();
 
-                await Task.Run(() => _renamer.LoadFiles(dialog.SelectedPath));
+                try
+                {
+                    await Task.Run(() => _renamer.LoadFiles(dialog.SelectedPath));
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("Побробности: " + e.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
                 foreach (var pair in _renamer.GetFilePairs())
                     FilePairs.Add(pair);

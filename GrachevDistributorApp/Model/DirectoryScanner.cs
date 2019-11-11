@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -18,10 +19,13 @@ namespace GrachevDistributorApp.Model
             try
             {
                 var allFiles = Directory.GetFiles(directoryPath, "*", SearchOption.TopDirectoryOnly);
-                archivers = allFiles.Where(file => IsArchive(file)).ToDictionary(file => Path.GetFileNameWithoutExtension(file));
-                pictures = allFiles.Where(file => IsPicture(file)).ToDictionary(file => Path.GetFileNameWithoutExtension(file));
+                archivers = ToDictionary(allFiles.Where(file => IsArchive(file)));
+                pictures = ToDictionary(allFiles.Where(file => IsPicture(file)));
             }
-            catch { }
+            catch
+            {
+                throw;
+            }
 
             foreach (var fileName in archivers.Keys)
             {
@@ -44,11 +48,28 @@ namespace GrachevDistributorApp.Model
 
         #region Helpers
 
+        private static Dictionary<string, string> ToDictionary(IEnumerable<string> files)
+        {
+            var result = new Dictionary<string, string>();
+
+            foreach (var file in files)
+            {
+                var name = Path.GetFileNameWithoutExtension(file);
+
+                if (!result.ContainsKey(name))
+                {
+                    result.Add(name, file);
+                }
+            }
+
+            return result;
+        }
+
         private static bool IsArchive(string filePath)
         {
             var extension = Path.GetExtension(filePath).ToLower();
 
-            return extension == ".rar" || extension == ".zip" || extension == "7z";
+            return extension == ".rar" || extension == ".zip" || extension == ".7z";
         }
 
         private static bool IsPicture(string filePath)

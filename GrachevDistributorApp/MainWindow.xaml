@@ -3,13 +3,18 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                      xmlns:local="clr-namespace:GrachevDistributorApp"
+                      xmlns:local="clr-namespace:GrachevDistributorApp.ViewModel"
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                       mc:Ignorable="d"
                       Title="Renamer by ILepekhov"
                       WindowStartupLocation="CenterScreen"
                       Height="450" 
                       Width="800">
+
+    <Controls:MetroWindow.Resources>
+        <local:BoolToBrushConverter x:Key="BoolToBrushConverter" />
+    </Controls:MetroWindow.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -24,6 +29,32 @@
                 <Button Content="Выбрать каталог" Command="{Binding SelectDirectoryCommand}"/>
                 <Button Content="Переименовать" Command="{Binding RenameCommand}"/>
             </UniformGrid>
+        </GroupBox>
+
+        <GroupBox Header="Файлы" Grid.Column="1">
+            <ListBox ItemsSource="{Binding FilePairs}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Background="{Binding CanRename, Converter={StaticResource BoolToBrushConverter}}" Margin="0 0 4 0" 
+                                    Width="4" VerticalAlignment="Stretch"/>
+
+                            <UniformGrid Columns="2" Grid.Column="1">
+                                <TextBlock Text="Архив:" Visibility="Hidden" Controls:VisibilityHelper.IsVisible="{Binding ArchiveFileExists}" />
+                                <TextBlock Text="{Binding ArchiveFileName}" Visibility="Hidden" Controls:VisibilityHelper.IsVisible="{Binding ArchiveFileExists}" />
+
+                                <TextBlock Text="Изображение:" Visibility="Hidden" Controls:VisibilityHelper.IsVisible="{Binding PictureFileExists}" />
+                                <TextBlock Text="{Binding PictureFileName}" Visibility="Hidden" Controls:VisibilityHelper.IsVisible="{Binding PictureFileExists}" />
+                            </UniformGrid>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </GroupBox>
     </Grid>
 </Controls:MetroWindow>
